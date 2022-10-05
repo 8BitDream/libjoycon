@@ -36,3 +36,8 @@ build/*
 .vscode
 .idea
 interface
+
+# Hidden (non git)
+.*
+!.gitignore
+!.gitmodules

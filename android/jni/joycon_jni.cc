@@ -27,7 +27,7 @@
 #include <memory>
 #include <unistd.h>
 
-#define CLASS_NAME "com/mumumusuc/libjoycon/Controller"
+#define CLASS_NAME "com/hiddenramblings/tagmo/JoyCon"
 #define NELEM(m) (sizeof((m)) / sizeof(JNINativeMethod))
 #define debug(fmt, ...) log_d(__func__, fmt, ##__VA_ARGS__)
 
@@ -58,7 +58,7 @@ static JNINativeMethod sMethods[] = {
     {"poll", "(JB)I", (void *)poll},
     {"set_player", "(JBB)I", (void *)set_player},
     {"set_rumble", "(JZ)I", (void *)set_rumble},
-    {"rumble", "(JBBBBBBBB)I", (void *)rumble},
+    {"rumble", "(JSBBBBBBB)I", (void *)rumble},
     {"rumblef", "(JFFFFFFFF)I", (void *)rumblef},
 };
 
