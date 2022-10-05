@@ -55,7 +55,7 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                         val dev =
                             intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         debug("device found -> $dev")
-                        mCallback?.onStateChanged(dev.name, dev.address, BT_STATE_FOUND_DEVICE)
+                        mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_FOUND_DEVICE)
                     }
                     BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED -> {
                         val state = intent.getIntExtra(BluetoothAdapter.EXTRA_CONNECTION_STATE, -1)
@@ -65,21 +65,21 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                         when (state) {
                             BluetoothAdapter.STATE_CONNECTED -> {
                                 debug("$dev connected")
-                                mCallback?.onStateChanged(dev.name, dev.address, BT_STATE_CONNECTED)
+                                mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_CONNECTED)
                             }
                             BluetoothAdapter.STATE_DISCONNECTED -> {
                                 debug("$dev disconnected")
                                 mCallback?.onStateChanged(
-                                    dev.name,
-                                    dev.address,
+                                    dev?.name,
+                                    dev?.address,
                                     BT_STATE_DISCONNECTED
                                 )
                             }
                             BluetoothAdapter.STATE_CONNECTING -> {
                                 debug("$dev connecting")
                                 mCallback?.onStateChanged(
-                                    dev.name,
-                                    dev.address,
+                                    dev?.name,
+                                    dev?.address,
                                     BT_STATE_CONNECTING
                                 )
                             }
@@ -93,15 +93,15 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                         when (state) {
                             BluetoothDevice.BOND_BONDED -> {
                                 debug("$dev paired")
-                                mCallback?.onStateChanged(dev.name, dev.address, BT_STATE_PAIRED)
+                                mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_PAIRED)
                             }
                             BluetoothDevice.BOND_NONE -> {
                                 debug("$dev unpaired")
-                                mCallback?.onStateChanged(dev.name, dev.address, BT_STATE_UNPAIRED)
+                                mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_UNPAIRED)
                             }
                             BluetoothDevice.BOND_BONDING -> {
                                 debug("$dev pairing")
-                                mCallback?.onStateChanged(dev.name, dev.address, BT_STATE_PAIRING)
+                                mCallback?.onStateChanged(dev?.name, dev?.address, BT_STATE_PAIRING)
                             }
                         }
                     }
@@ -208,7 +208,8 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
 
     fun pair(dev: BluetoothDevice) {
         checkOrThrow()
-        if (dev.bondState == BluetoothDevice.BOND_NONE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+            && dev.bondState == BluetoothDevice.BOND_NONE) {
             dev.createBond()
         }
     }
@@ -248,7 +249,8 @@ class BluetoothHelper : BluetoothProfile.ServiceListener {
                     val BTSOCK_FLAG_NO_SDP = 4
                     val SEC_FLAG_AUTH_MITM = 8
                     val SEC_FLAG_AUTH_16_DIGIT = 16
-                    dev.setPin(byteArrayOf(0, 0, 0, 0))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+                        dev.setPin(byteArrayOf(0, 0, 0, 0))
                     val pfd = connectSocket.invoke(
                         bsm,
                         dev,
