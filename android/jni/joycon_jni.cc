@@ -1,5 +1,6 @@
 /*
  *   Copyright (c) 2020 mumumusuc
+ *   Copyright (c) 2022 AbandonedCart.  All rights reserved.
 
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -42,7 +43,7 @@ static const char _map[] = "0123456789ABCDEF";
 static jlong create(JNIEnv *, jobject, jint);
 static void destroy(JNIEnv *, jobject, jlong);
 static jint poll(JNIEnv *, jobject, jlong, jbyte);
-static jint set_player(JNIEnv *, jobject, jlong, jbyte, jbyte);
+static jint set_player(JNIEnv *, jobject, jlong, jint, jint);
 static jint set_rumble(JNIEnv *, jobject, jlong, jboolean);
 static jint rumble(JNIEnv *, jobject, long, jshort, jbyte, jbyte, jbyte, jbyte, jbyte, jbyte, jbyte);
 static jint rumblef(JNIEnv *, jobject, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat);
@@ -56,7 +57,7 @@ static JNINativeMethod sMethods[] = {
     {"create", "(I)J", (void *)create},
     {"destroy", "(J)V", (void *)destroy},
     {"poll", "(JB)I", (void *)poll},
-    {"set_player", "(JBB)I", (void *)set_player},
+    {"set_player", "(JII)I", (void *)set_player},
     {"set_rumble", "(JZ)I", (void *)set_rumble},
     {"rumble", "(JSBBBBBBB)I", (void *)rumble},
     {"rumblef", "(JFFFFFFFF)I", (void *)rumblef},
@@ -168,10 +169,49 @@ static jint poll(JNIEnv *env, jobject object, jlong handle, jbyte type) {
     return controller->Poll(PollType(type));
 }
 
-static jint set_player(JNIEnv *env, jobject object, jlong handle, jbyte player, jbyte flash) {
+static jint set_player(JNIEnv *env, jobject object, jlong handle, jint player, jint flash) {
     debug();
     auto controller = reinterpret_cast<controller::Controller *>(handle);
-    return controller->SetPlayer(Player(player), PlayerFlash(flash));
+    Player jPlayer;
+    PlayerFlash jPlayerFlash;
+    switch(player)
+    {
+        case 1:
+            jPlayer = PLAYER_1;
+            break;
+        case 2:
+            jPlayer = PLAYER_2;
+            break;
+        case 3:
+            jPlayer = PLAYER_3;
+            break;
+        case 4:
+            jPlayer = PLAYER_4;
+            break;
+        default:
+            jPlayer = PLAYER_0;
+            break;
+    }
+    switch(flash)
+    {
+        case 1:
+            jPlayerFlash = PLAYER_FLASH_1;
+            break;
+        case 2:
+            jPlayerFlash = PLAYER_FLASH_2;
+            break;
+        case 3:
+            jPlayerFlash = PLAYER_FLASH_3;
+            break;
+        case 4:
+            jPlayerFlash = PLAYER_FLASH_4;
+            break;
+        default:
+            jPlayerFlash = PLAYER_FLASH_0;
+            break;
+    }
+    // return controller->SetPlayer(Player(player), PlayerFlash(flash));
+    return controller->SetPlayer(jPlayer, jPlayerFlash);
 }
 
 static jint set_rumble(JNIEnv *env, jobject object, jlong handle, jboolean enable) {
